@@ -1,0 +1,21 @@
+  <core:FragmentDefinition id="_IDGenFragmentDefinition1" xmlns:m="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+  <m:Dialog
+            id="quickHelpDialog"
+            title="Quick Help"
+            class="sapUiContentPadding"
+           
+            draggable="true"
+            resizable="true"
+            contentHeight="300px"
+            contentWidth="400px">
+
+            <m:VBox>
+                <m:Text text="Here is some quick help content for the user."/>
+                <m:Text text="You can explain features, steps, or FAQs here."/>
+            </m:VBox>
+
+            <m:endButton>
+                <m:Button text="Close" press="onCloseQuickHelp"/>
+            </m:endButton>
+        </m:Dialog>
+        </core:FragmentDefinition>

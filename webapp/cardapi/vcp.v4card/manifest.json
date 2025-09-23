@@ -1,0 +1,71 @@
+{
+  "sap.app": {
+    "id": "vcp.v4card",
+    "type": "card",
+    "applicationVersion": {
+			"version": "1.0.0"
+		}
+  },
+  "sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"phone": true,
+			"tablet": true
+		},
+		"icons": {
+			"icon": "sap-icon://table-view"
+		}
+	},
+  "sap.card": {
+ 
+    "configuration": {
+        	"destinations": {
+				"catalog": {
+					"name": "catalog",
+					"label": "catalog for snapshot lag",
+					"defaultUrl": "https://sbpbtp-vcpprovider-sc0jeojq-dev-config-products-srv.cfapps.us10.hana.ondemand.com/odata/v2/catalog/getForecastSnapshotLag"
+				}
+			}
+    },
+    "data": {
+      "request": {
+        "url": "/v2/catalog/V_SNAPSHOT_LAG_CIR",
+        "method": "GET"
+      },
+      "path": "/value"
+    },
+       "type": "Table",
+    "header": {
+      "title": "Forecast Snapshot Lag "
+    },
+    "content": {
+      "columns": [
+        { "label": "Location" },
+        { "label": "Product" },
+        { "label": "Version" },
+        { "label": "Scenario" },
+        { "label": "Year-Month" },
+        { "label": "Lag1" },
+        { "label": "Lag2" },
+        { "label": "Lag3" },
+        { "label": "Lag4" },
+        { "label": "Lag5" }
+      ],
+      "row": {
+        "cells": [
+          { "value": "{{LOCATION_ID}}" },
+          { "value": "{{PRODUCT_ID}}" },
+          { "value": "{{VERSION}}" },
+          { "value": "{{SCENARIO}}" },
+          { "value": "{{YEAR_MONTH}}" },
+          { "value": "{{LAG1_CIR}}" },
+          { "value": "{{LAG2_CIR}}" },
+          { "value": "{{LAG3_CIR}}" },
+          { "value": "{{LAG4_CIR}}" },
+          { "value": "{{LAG5_CIR}}" }
+        ]
+      }
+    }
+  }
+}

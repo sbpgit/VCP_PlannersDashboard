@@ -5,9 +5,10 @@
     xmlns:viz="sap.viz.ui5.controls"
     xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
     xmlns:viz.data="sap.viz.ui5.data"
+    
     xmlns:card="sap.ui.integration.widgets"
     class="dashboard-container">
-    <Page id="page" title="{i18n>title}">
+    <Page id="page"  title="{i18n>title}">
      <content>
             <!-- Header Section -->
             <VBox class="header">
@@ -74,28 +75,29 @@
             
 
     <!-- Embedded UI Integration Card -->
-<HBox fitContainer="true" justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap">
-    <card:Card
-    id="MyCardId"
-    
-    manifest="/cardapi/vcp.v4card/manifest.json"
-    width="400px"
-    height="1000px"/> 
-     <card:Card
-    id="MyCardId1"
-    
-     manifest="/cardapi/vcp.v4card/manifest.json"
-    width="400px"
-    height="800px"/> 
-     <!-- <card:Card
-    id="MyCardId2" 
-    
-    manifest="/cardapi/vcp.v4card/manifest.json"
-    width="400px"
-    height="300px"/>  -->
+<HBox fitContainer="true" justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap" class ="card-content" >
+   <items>
+        <card:Card
+            id="MyCardId"
+            manifest="/cardapi/vcp.v4card/manifest.json"
+            width="300px"
+            height="500px"/>
+
+        <card:Card
+            id="MyCardId1"
+            manifest="/cardapi/vcp.v4card/manifest.json"
+            width="300px"
+            height="500px"/>
+              <card:Card
+            id="MyCardId2"
+            manifest="/cardapi/vcp.v4card/manifest.json"
+            width="300px"
+            height="500px"/>
+    </items>
     
 
  </HBox>
+ <!-- <Button text="Open Quick Help" press="onOpenQuickHelp"/> -->
 <Toolbar>
     <Title text="Dashboard"/>
     <ToolbarSpacer/>

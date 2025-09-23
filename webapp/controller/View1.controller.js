@@ -20,11 +20,24 @@ sap.ui.define([
         },
         error: function (oError) {
             console.error("Read failed:", oError);
-        }
+        },
+      
     });
-           
-    
+         var oCardHost = this.byId("MyCardId2");
+          oCardHost.attachEvent("_ready", function () {
+        var oInnerCard = oCardHost.getCard();
 
+        if (oInnerCard) {
+           
+            oInnerCard.setParameters({});
+
+            
+            if (oInnerCard.reload) {
+                oInnerCard.reload();
+            }
+        }   
+    
+ });
         },
     card:function(){
         var oCard = that.byId("MyCardId");
@@ -34,7 +47,27 @@ sap.ui.define([
     sap.m.MessageBox.information(
         "This page shows KPIs. Use the cards to track Sales & Profit. Click on a card for details."
     );
-}
+},
+// _updateCardParameters: function () {
+//     var oCardHost = this.byId("MyCardId2");
+//     var oInnerCard = oCardHost.getCard();
+
+//     var sLocation = this.byId("LocationSelect").getSelectedKey();
+//     var sProduct  = this.byId("productSelect").getSelectedKey();
+//     var sVersion  = this.byId("idver").getSelectedKey();
+//     var sScenario = this.byId("idser").getSelectedKey();
+
+//     if (oInnerCard) {
+//         oInnerCard.setParameters({
+//             location: sLocation,
+//             product: sProduct,
+//             version: sVersion,
+//             scenario: sScenario
+//         });
+//     }
+// }
+
+
 
        
     });
