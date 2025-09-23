@@ -1,0 +1,116 @@
+<mvc:View controllerName="vcp.vcplanner.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+    xmlns:viz.data="sap.viz.ui5.data"
+    xmlns:card="sap.ui.integration.widgets"
+    class="dashboard-container">
+    <Page id="page" title="{i18n>title}">
+     <content>
+            <!-- Header Section -->
+            <VBox class="header">
+                <HBox class="header-top" alignItems="Center" justifyContent="SpaceBetween">
+                    
+                    <!-- Logo & Title -->
+                    <HBox class="logo-section" alignItems="Center">
+                        <Text  class="logo"/>
+                        <VBox class="title-section">
+                            <Title text="VC Planner Dashboard" level="H1"/>
+                            <Text text="Sales &amp; Operations Planning for Configurable Products"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Controls -->
+                    <HBox class="controls" alignItems="Inherit" justifyContent="Inherit">
+                        <VBox class="control-group">
+                            <Label text="Location"/>
+                           <Select id="LocationSelect" 
+            items="{
+                path: 'locModel>/results'
+            }">
+                                <items>
+                                    <core:Item key="{locModel>FACTORY_LOC}" text="{locModel>FACTORY_LOC}"  />
+                                </items>
+                            </Select>
+                        </VBox>
+
+                        <VBox class="control-group">
+                            <Label text="Product"/>
+                            <Select id="productSelect" 
+            items="{
+                path: 'locModel>/results'
+            }">
+                                <items>
+                                   <core:Item key="{locModel>PRODUCT_ID}" text="{locModel>PRODUCT_ID}" />
+                                </items>
+                            </Select>
+                        </VBox>
+
+                        <VBox class="control-group">
+                            <Label id="versionSelect"  text="Version"/>
+                           
+    <Select id="idver" forceSelection="true">
+        <core:Item key="v1" text="_BASELINE" />
+         
+    </Select>
+                        </VBox>
+
+                             <VBox class="control-group">
+                            <Label id="ScenarioSelect" text="Scenario"  />
+    <Select id="idser" forceSelection="true">
+        <core:Item key="v1" text="_PLAN" />
+         
+    </Select>
+                        </VBox>
+
+                       
+                    </HBox>
+                </HBox>
+            </VBox>
+
+            <HBox class="main-content" alignItems="Start" justifyContent="SpaceBetween">
+            
+
+    <!-- Embedded UI Integration Card -->
+<HBox fitContainer="true" justifyContent="SpaceBetween" alignItems="Center" wrap="Wrap">
+    <card:Card
+    id="MyCardId"
+    
+    manifest="/cardapi/vcp.v4card/manifest.json"
+    width="400px"
+    height="1000px"/> 
+     <card:Card
+    id="MyCardId1"
+    
+     manifest="/cardapi/vcp.v4card/manifest.json"
+    width="400px"
+    height="800px"/> 
+     <!-- <card:Card
+    id="MyCardId2" 
+    
+    manifest="/cardapi/vcp.v4card/manifest.json"
+    width="400px"
+    height="300px"/>  -->
+    
+
+ </HBox>
+<Toolbar>
+    <Title text="Dashboard"/>
+    <ToolbarSpacer/>
+    <Button icon="sap-icon://sys-help" text="Help" press=".onHelpPress"/>
+</Toolbar>
+</HBox>
+
+
+
+
+        
+         
+
+            
+        </content>
+    </Page>
+    
+</mvc:View>
