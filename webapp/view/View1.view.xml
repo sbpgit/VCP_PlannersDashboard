@@ -79,20 +79,17 @@
    <items>
         <card:Card
             id="MyCardId"
-            manifest="/cardapi/vcp.v4card/manifest.json"
             width="300px"
             height="500px"/>
 
         <card:Card
             id="MyCardId1"
-            manifest="/cardapi/vcp.v4card/manifest.json"
             width="300px"
             height="500px"/>
               <card:Card
             id="MyCardId2"
-            manifest="/cardapi/vcp.v4card/manifest.json"
-            width="300px"
-            height="500px"/>
+            width="1000px"
+            height="1000px"/>
     </items>
     
 
