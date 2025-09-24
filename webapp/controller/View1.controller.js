@@ -1,7 +1,7 @@
 sap.ui.define([
-    "sap/ui/core/mvc/Controller"
-
-], function (Controller) {
+    "sap/ui/core/mvc/Controller",
+    "sap/m/MessageBox"
+], function (Controller, MessageBox) {
     "use strict";
     var that;
 
@@ -14,148 +14,231 @@ sap.ui.define([
                     var oJSON = new sap.ui.model.json.JSONModel(oData);
                     that.byId("LocationSelect").setModel(oJSON, "locModel");
                     that.byId("productSelect").setModel(oJSON, "locModel");
+                    // these lines don't do anything currently but kept as placeholders:
                     that.byId("idver");
                     that.byId("idser");
                     that.loadForecastCard();
                 },
                 error: function (oError) {
                     console.error("Read failed:", oError);
-                },
-
-            });
-
-        },
-
-        loadForecastCard: function () {
-            var oModel = this.getOwnerComponent().getModel();
-            oModel.read("/getForecastSnapshotLag", {
-                success: function (oData) {
-                    console.log("Forecast data loaded:", oData);
-
-                    // Ensure we have data
-                    if (!oData || !oData.results || oData.results.length === 0) {
-                        return;
-                    }
-
-                    var oForecastManifest = {
-                        "sap.app": {
-                            "id": "vcp.v4card.forecast",
-                            "type": "card",
-                            "applicationVersion": {
-                                "version": "1.0.0"
-                            }
-                        },
-                        "sap.ui": {
-                            "technology": "UI5",
-                            "deviceTypes": {
-                                "desktop": true,
-                                "phone": true,
-                                "tablet": true
-                            }
-                        },
-                        "sap.card": {
-                            "type": "Table",
-                            "configuration": {
-                                "parameters": {
-                                    "entityType": {
-                                        "value": "Forecast",
-                                        "type": "string",
-                                        "label": "Data Type",
-                                        "allowedValues": [
-                                            { "key": "forecast", "name": "Forecast" },
-                                            { "key": "assembly", "name": "Assembly" }
-                                        ]
-                                    }
-                                }
-                            },
-                            "data": {
-                                "json": oData.results
-                            },
-                            "header": {
-                                "title": "Forecast Snapshot Lag",
-                                "subTitle": "Real-time forecast lag analysis",
-                                "icon": {
-                                    "src": "sap-icon://table-view"
-                                },
-                                "status": {
-                                    "text": oData.results.length + " records",
-                                    "state": "Success"
-                                },
-                                "actions": [
-                                    {
-                                        "type": "Custom",
-                                        "text": "Switch Data Type",
-                                        "icon": "sap-icon://switch-views",
-                                        "press": "onSwitchDataType"
-                                    }
-                                ]
-                            },
-
-                            "content": {
-                                "data": {
-                                    "path": "/"
-                                },
-                                "row": {
-                                    "columns": [
-                                        {
-                                            "title": "Location",
-                                            "value": "{LOCATION_ID}"
-                                        },
-                                        {
-                                            "title": "Product",
-                                            "value": "{PRODUCT_ID}"
-                                        },
-                                        {
-                                            "title": "Unique ID",
-                                            "value": "{UNIQUE_ID}"
-                                        },
-                                        {
-                                            "title": "Period",
-                                            "value": "{YEAR_MONTH}"
-                                        },
-                                        {
-                                            "title": "Lag1",
-                                            "value": "{LAG1_CIR}"
-                                        },
-                                        {
-                                            "title": "Lag2",
-                                            "value": "{LAG2_CIR}"
-                                        },
-                                        {
-                                            "title": "Lag3",
-                                            "value": "{LAG3_CIR}"
-                                        },
-                                        {
-                                            "title": "Lag4",
-                                            "value": "{LAG4_CIR}"
-                                        },
-                                        {
-                                            "title": "Lag5",
-                                            "value": "{LAG5_CIR}"
-                                        }
-                                    ]
-                                },
-                                "maxItems": 100
-                            }
-                        }
-                    };
-
-                    // Set manifest to the card
-                    var oCard = that.byId("MyCardId2");
-                    if (oCard) {
-                        oCard.setManifest(oForecastManifest);
-                        console.log("Forecast card manifest set successfully");
-                    } else {
-                        console.error("Forecast card not found");
-                    }
-                },
-                error: function (oError) {
-                    console.error("Read failed for forecast:", oError);
-                    MessageBox.error("Failed to load forecast data: " + oError.message);
                 }
             });
         },
-        onSwitchDataType:function(oEvent){
+
+       loadForecastCard: function () {
+    var oModel = this.getOwnerComponent().getModel();
+    var that = this;
+    
+    oModel.read("/getForecastSnapshotLag", {
+        success: function (oData) {
+            console.log("Forecast data loaded:", oData);
+
+            // Ensure we have data
+            if (!oData || !oData.results || oData.results.length === 0) {
+                return;
+            }
+
+            // Transform data for bar chart - aggregate lag values by period
+            var chartData = [];
+            var periodMap = {};
+            
+            // Group data by period and calculate averages for each lag
+            oData.results.forEach(function(item) {
+                var period = item.YEAR_MONTH;
+                if (!periodMap[period]) {
+                    periodMap[period] = {
+                        period: period,
+                        lag1Values: [],
+                        lag2Values: [],
+                        lag3Values: [],
+                        lag4Values: [],
+                        lag5Values: []
+                    };
+                }
+                
+                if (item.LAG1_CIR !== null && item.LAG1_CIR !== undefined) {
+                    periodMap[period].lag1Values.push(parseFloat(item.LAG1_CIR));
+                }
+                if (item.LAG2_CIR !== null && item.LAG2_CIR !== undefined) {
+                    periodMap[period].lag2Values.push(parseFloat(item.LAG2_CIR));
+                }
+                if (item.LAG3_CIR !== null && item.LAG3_CIR !== undefined) {
+                    periodMap[period].lag3Values.push(parseFloat(item.LAG3_CIR));
+                }
+                if (item.LAG4_CIR !== null && item.LAG4_CIR !== undefined) {
+                    periodMap[period].lag4Values.push(parseFloat(item.LAG4_CIR));
+                }
+                if (item.LAG5_CIR !== null && item.LAG5_CIR !== undefined) {
+                    periodMap[period].lag5Values.push(parseFloat(item.LAG5_CIR));
+                }
+            });
+            
+            // Calculate averages and create chart data
+            Object.keys(periodMap).sort().forEach(function(period) {
+                var data = periodMap[period];
+                var chartItem = {
+                    period: period,
+                    lag1: data.lag1Values.length > 0 ? 
+                        data.lag1Values.reduce((a, b) => a + b, 0) / data.lag1Values.length : 0,
+                    lag2: data.lag2Values.length > 0 ? 
+                        data.lag2Values.reduce((a, b) => a + b, 0) / data.lag2Values.length : 0,
+                    lag3: data.lag3Values.length > 0 ? 
+                        data.lag3Values.reduce((a, b) => a + b, 0) / data.lag3Values.length : 0,
+                    lag4: data.lag4Values.length > 0 ? 
+                        data.lag4Values.reduce((a, b) => a + b, 0) / data.lag4Values.length : 0,
+                    lag5: data.lag5Values.length > 0 ? 
+                        data.lag5Values.reduce((a, b) => a + b, 0) / data.lag5Values.length : 0
+                };
+                chartData.push(chartItem);
+            });
+
+            var oForecastManifest = {
+                "sap.app": {
+                    "id": "vcp.v4card.forecast",
+                    "type": "card",
+                    "applicationVersion": {
+                        "version": "1.0.0"
+                    }
+                },
+                "sap.ui": {
+                    "technology": "UI5",
+                    "deviceTypes": {
+                        "desktop": true,
+                        "phone": true,
+                        "tablet": true
+                    }
+                },
+                "sap.card": {
+                    "type": "Analytical",
+                    "configuration": {
+                        "parameters": {
+                            "entityType": {
+                                "value": "Forecast",
+                                "type": "string",
+                                "label": "Data Type",
+                                "allowedValues": [
+                                    { "key": "forecast", "name": "Forecast" },
+                                    { "key": "assembly", "name": "Assembly" }
+                                ]
+                            }
+                        }
+                    },
+                    "data": {
+                        "json": chartData
+                    },
+                    "header": {
+                        "type": "Numeric",
+                        "title": "Forecast Snapshot Lag Analysis",
+                        "subTitle": "Comparison across lag periods",
+                        "mainIndicator": {
+                            "number": chartData.length,
+                            "unit": "Periods",
+                            "trend": "Up",
+                            "state": "Good"
+                        },
+                        "details": "Average lag values by period",
+                        "sideIndicators": [
+                            {
+                                "title": "Total Records",
+                                "number": oData.results.length,
+                                "unit": "Records"
+                            },
+                            {
+                                "title": "Unique Periods",
+                                "number": chartData.length,
+                                "unit": "Months"
+                            }
+                        ]
+                    },
+                    "content": {
+                        "chartType": "Bar",
+                        "legend": {
+                            "visible": true,
+                            "position": "Bottom",
+                            "alignment": "Center"
+                        },
+                        "plotArea": {
+                            "dataLabel": {
+                                "visible": true,
+                                "showTotal": false
+                            },
+                            "categoryAxisText": {
+                                "visible": true
+                            },
+                            "valueAxisText": {
+                                "visible": true
+                            }
+                        },
+                        "title": {
+                            "text": "Forecast Lag Comparison by Period",
+                            "visible": true,
+                            "alignment": "Center"
+                        },
+                        "measureAxis": "valueAxis",
+                        "dimensionAxis": "categoryAxis",
+                        "data": {
+                            "path": "/"
+                        },
+                        "dimensions": [
+                            {
+                                "label": "Period",
+                                "value": "{period}"
+                            }
+                        ],
+                        "measures": [
+                            {
+                                "label": "Lag 1",
+                                "value": "{lag1}",
+                                "color": "sapUiChartPaletteSequentialHue1Light1"
+                            },
+                            {
+                                "label": "Lag 2", 
+                                "value": "{lag2}",
+                                "color": "sapUiChartPaletteSequentialHue1Light2"
+                            },
+                            {
+                                "label": "Lag 3",
+                                "value": "{lag3}",
+                                "color": "sapUiChartPaletteSequentialHue1"
+                            },
+                            {
+                                "label": "Lag 4",
+                                "value": "{lag4}",
+                                "color": "sapUiChartPaletteSequentialHue1Dark1"
+                            },
+                            {
+                                "label": "Lag 5",
+                                "value": "{lag5}",
+                                "color": "sapUiChartPaletteSequentialHue1Dark2"
+                            }
+                        ],
+                        "actions": [
+                            {
+                                "type": "Navigation",
+                                "enabled": true
+                            }
+                        ]
+                    }
+                }
+            };
+
+            // Set manifest to the card
+            var oCard = that.byId("MyCardId2");
+            if (oCard) {
+                oCard.setManifest(oForecastManifest);
+                console.log("Forecast analytical card manifest set successfully");
+            } else {
+                console.error("Forecast card not found");
+            }
+        },
+        error: function (oError) {
+            console.error("Read failed for forecast:", oError);
+            MessageBox.error("Failed to load forecast data: " + oError.message);
+        }
+    });
+},
+        onSwitchDataType: function (oEvent) {
+           
             var event = oEvent;
         }
     });
